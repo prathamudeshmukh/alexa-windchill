@@ -1,0 +1,43 @@
+fetchPackagesFromLocalStorage() {
+    LocalStorage.multiGet([
+      LocalStorage.KEY_DOP, LocalStorage.KEY_CART_PACKAGES,
+    ], (error, keyStore) => {
+      const store = LocalStorage.getKeyValueMap(keyStore);
+      console.log('keyStore', keyStore);
+      const dop = JSON.parse(store[LocalStorage.KEY_DOP]).id;
+      const cartPackages = store[LocalStorage.KEY_CART_PACKAGES] || {};
+      console.log('fetchPackages', cartPackages);
+      if (cartPackages[dop]) {
+        this.collection = cartPackages.collection;
+      }
+    });
+  }
+
+  savePackagesToLocalStorage(packageModel) {
+    // const cageNo = packageModel.get('cage_number');
+    LocalStorage.multiGet([
+      LocalStorage.KEY_DOP, LocalStorage.KEY_CART_PACKAGES,
+    ], (error, keyStore) => {
+      const store = LocalStorage.getKeyValueMap(keyStore);
+      console.log('dop', store[LocalStorage.KEY_DOP]);
+      const dop = JSON.parse(store[LocalStorage.KEY_DOP]).id;
+
+      const cartPackages = (
+        store[LocalStorage.KEY_CART_PACKAGES] || {}
+      );
+      if (!cartPackages[dop]) {
+        cartPackages[dop] = new Packages();
+      }
+
+      cartPackages[dop].unshift(packageModel);
+      console.log('final savePackages', cartPackages);
+      LocalStorage.store(LocalStorage.KEY_CART_PACKAGES, cartPackages);
+    });
+  }
+
+  unshift(model, saveLocally) {
+    super.unshift(model);
+    if (saveLocally) {
+      this.savePackagesToLocalStorage(model);
+    }
+  }

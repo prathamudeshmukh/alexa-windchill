@@ -1,0 +1,150 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "windchill plm",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "OpenWindchillIntent",
+                    "slots": [],
+                    "samples": [
+                        "open windchill plm"
+                    ]
+                },
+                {
+                    "name": "SearchPartIntent",
+                    "slots": [
+                        {
+                            "name": "partName",
+                            "type": "AMAZON.NUMBER",
+                            "samples": [
+                                "{partName}",
+                                "part name is {partName}"
+                            ]
+                        }
+                    ],
+                    "samples": [
+                        "search part {partName}",
+                        "search part"
+                    ]
+                },
+                {
+                    "name": "CheckStatusIntent",
+                    "slots": [
+                        {
+                            "name": "serverType",
+                            "type": "AMAZON.Person",
+                            "samples": [
+                                "{serverType} server",
+                                "{serverType}"
+                            ]
+                        }
+                    ],
+                    "samples": [
+                        "is {serverType} server running",
+                        "open {serverType} server",
+                        "check server status",
+                        "is server running",
+                        "check status"
+                    ]
+                }
+            ],
+            "types": [
+                {
+                    "name": "AMAZON.Person",
+                    "values": [
+                        {
+                            "id": "qa",
+                            "name": {
+                                "value": "QA"
+                            }
+                        },
+                        {
+                            "id": "prod",
+                            "name": {
+                                "value": "Production"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "dialog": {
+            "intents": [
+                {
+                    "name": "SearchPartIntent",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                        {
+                            "name": "partName",
+                            "type": "AMAZON.NUMBER",
+                            "confirmationRequired": true,
+                            "elicitationRequired": true,
+                            "prompts": {
+                                "confirmation": "Confirm.Slot.414406433705.973469251811",
+                                "elicitation": "Elicit.Slot.414406433705.973469251811"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "CheckStatusIntent",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                        {
+                            "name": "serverType",
+                            "type": "AMAZON.Person",
+                            "confirmationRequired": false,
+                            "elicitationRequired": true,
+                            "prompts": {
+                                "elicitation": "Elicit.Slot.1060388687966.1444535226100"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "prompts": [
+            {
+                "id": "Elicit.Slot.414406433705.973469251811",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "what is the name of the part"
+                    }
+                ]
+            },
+            {
+                "id": "Confirm.Slot.414406433705.973469251811",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "I will search for {partName} , is that correct?"
+                    }
+                ]
+            },
+            {
+                "id": "Elicit.Slot.1060388687966.1444535226100",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "Which server you would like to check status for?"
+                    }
+                ]
+            }
+        ]
+    }
+}
