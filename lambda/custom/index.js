@@ -3,14 +3,13 @@
 
 const Alexa = require('ask-sdk-core');
 const axios = require("axios");
+const windchillUrl = 'http://pp-1801221411iw.portal.ptc.io/Windchill'
+const options = { 
+  headers: { 'Cache-Control': 'no-cache', Authorization: 'Basic d2NhZG1pbjpwdGM=' } 
+ };
+const restBaseURI = 'http://pp-1801221411iw.portal.ptc.io/Windchill/servlet/rest/action'
 
 const validateWindchillConnection = async () => {
-  let windchillUrl = 'http://pp-1801221411iw.portal.ptc.io/Windchill'
-  // windchillUrl = 'https://fast.com/';
-  var options = { 
-   headers: { 'Cache-Control': 'no-cache', Authorization: 'Basic d2NhZG1pbjpwdGM=' } 
-  };
-
   try {
     const response = await axios.get(windchillUrl, options);
     const data = response.data;
@@ -22,6 +21,21 @@ const validateWindchillConnection = async () => {
   }
   return ;
 } 
+
+const getTasksCount = async () => {
+  try {
+    let taskURL = restBaseURI + '/userTask';
+    const response = await axios.get(taskURL, options);
+    const data = response.data;
+    if(data) {
+      return data.WTTaskCount;
+    }
+  } catch (error) {
+    return 'Sorry, cannot connect to windchill at this moment';
+  }
+  return ;
+
+}
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
@@ -36,6 +50,20 @@ const LaunchRequestHandler = {
   },
 };
 
+
+const ListTasksIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'ListTasksIntent';
+  },
+  async handle(handlerInput) {
+    const taskCount = await getTasksCount();
+    const speechText = `There are total ${taskCount} task(s) for you available, would you like me to list them down?`;
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .getResponse();
+  },
+}
 
 const SearchPartIntentHandler = {
   canHandle(handlerInput) {
@@ -79,20 +107,6 @@ const CheckStatusIntentHandler = {
   },
 };
 
-const HelloWorldIntentHandler = {
-  canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'HelloWorldIntent';
-  },
-  handle(handlerInput) {
-    const speechText = 'Hello World!';
-
-    return handlerInput.responseBuilder
-      .speak(speechText)
-      .withSimpleCard('Hello World', speechText)
-      .getResponse();
-  },
-};
 
 const HelpIntentHandler = {
   canHandle(handlerInput) {
@@ -109,6 +123,8 @@ const HelpIntentHandler = {
       .getResponse();
   },
 };
+
+
 
 const CancelAndStopIntentHandler = {
   canHandle(handlerInput) {
@@ -161,7 +177,8 @@ exports.handler = skillBuilder
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler,
     InProgressCheckStatusHandler,
-    CheckStatusIntentHandler
+    CheckStatusIntentHandler,
+    ListTasksIntentHandler
   )
   .addErrorHandlers(ErrorHandler)
   .lambda();

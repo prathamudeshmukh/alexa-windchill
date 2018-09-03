@@ -58,6 +58,16 @@
                         "is server running",
                         "check status"
                     ]
+                },
+                {
+                    "name": "ListTasksIntent",
+                    "slots": [],
+                    "samples": [
+                        "tasks to be performed today",
+                        "my todays tasks",
+                        "List tasks",
+                        "List tasks for me"
+                    ]
                 }
             ],
             "types": [
